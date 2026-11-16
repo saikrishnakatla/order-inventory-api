@@ -36,7 +36,9 @@ export const getOrderById = async (req, res, next) => {
 
 // 3. POST /orders
 export const createOrder = async (req, res, next) => {
-  const { customerName, items } = req.body || {};
+  const { items } = req.body || {};
+  // Extract customer name from verified JWT identity or request body
+  const customerName = req.user?.name || req.body?.customerName || req.user?.email;
 
   if (!customerName || typeof customerName !== 'string' || customerName.trim() === '') {
     return res.status(400).json({ error: 'customerName is required' });

@@ -3,12 +3,15 @@ import express from 'express';
 import productsRouter from './routes/products.routes.js';
 import ordersRouter from './routes/orders.routes.js';
 import {errorHandler} from './middlewares/errorHandler.js'
+import authRoutes from './routes/auth.routes.js';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
 app.disable('x-powered-by');
 app.use(express.json());
+app.use('/api/auth', authRoutes);
+app.use('/auth', authRoutes);
 
 // Request logger middleware
 app.use((req, res, next) => {
