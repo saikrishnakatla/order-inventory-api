@@ -49,21 +49,8 @@ export const getProductById = async (req, res, next) => {
 
 // 4. POST /products
 export const createProduct = async (req, res, next) => {
-  const { name, category, price, stock } = req.body || {};
-
-  if (!name || typeof name !== 'string' || !category || typeof category !== 'string') {
-    return res.status(400).json({ error: 'name and category are required strings' });
-  }
-
-  if (typeof price !== 'number' || price <= 0) {
-    return res.status(400).json({ error: 'price must be a positive number' });
-  }
-
-  if (!Number.isInteger(stock) || stock < 0) {
-    return res.status(400).json({ error: 'stock must be an integer >= 0' });
-  }
-
   try {
+    const { name, category, price, stock } = req.body;
     const newProduct = await productsService.createProduct({ name, category, price, stock });
     res.status(201).json({ data: newProduct });
   } catch (err) {
@@ -79,18 +66,8 @@ export const updateProduct = async (req, res, next) => {
     return res.status(400).json({ error: 'Invalid product id' });
   }
 
-  const { name, category, price, stock } = req.body || {};
-
-  if (price !== undefined && (typeof price !== 'number' || price < 0)) {
-    return res.status(400).json({ error: 'Invalid price' });
-  }
-
-  if (stock !== undefined && (!Number.isInteger(stock) || stock < 0)) {
-    return res.status(400).json({ error: 'Invalid stock' });
-  }
-
   try {
-    const updatedProduct = await productsService.updateProduct(id, { name, category, price, stock });
+    const updatedProduct = await productsService.updateProduct(id, req.body);
 
     if (!updatedProduct) {
       return res.status(404).json({ error: 'Product not found' });
