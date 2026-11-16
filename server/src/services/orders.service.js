@@ -1,4 +1,7 @@
 import pool from '../config/db.js';
+import redis from '../config/redis.js';
+
+const CACHE_KEY_ALL = 'cache:products:all';
 
 // 1. Get all orders with their items
 export const getAllOrders = async () => {
@@ -102,6 +105,14 @@ export const createOrder = async ({ customerName, items }) => {
 
     // COMMIT TRANSACTION (All inserts & updates succeed atomically)
     await connection.commit();
+
+    // Invalidate Redis product catalog cache so live stock is reflected immediately!
+    try {
+      await redis.del(CACHE_KEY_ALL);
+      console.log('[REDIS] Cache invalidated after order placement');
+    } catch (e) {
+      console.error('[REDIS] Cache invalidation failed:', e.message);
+    }
 
     return {
       id: orderId,
