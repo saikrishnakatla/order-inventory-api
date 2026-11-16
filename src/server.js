@@ -1,17 +1,54 @@
 import 'dotenv/config';
 import express from 'express';
+import cors from 'cors';
+import helmet from 'helmet';
+import rateLimit from 'express-rate-limit';
 import productsRouter from './routes/products.routes.js';
 import ordersRouter from './routes/orders.routes.js';
-import {errorHandler} from './middlewares/errorHandler.js'
+import { errorHandler } from './middlewares/errorHandler.js';
 import authRoutes from './routes/auth.routes.js';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-app.disable('x-powered-by');
+// 1. Security Headers (Helmet)
+app.use(helmet());
+
+// 2. Cross-Origin Resource Sharing (CORS) for Frontend connection
+app.use(
+  cors({
+    origin: ['http://localhost:5173', 'http://127.0.0.1:5173', 'http://localhost:3000'],
+    credentials: true,
+  })
+);
+
+// 3. Body Parser
 app.use(express.json());
-app.use('/api/auth', authRoutes);
-app.use('/auth', authRoutes);
+
+// 4. Rate Limiters
+const apiLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 100,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: {
+    status: 'error',
+    statusCode: 429,
+    message: 'Too many requests from this IP, please try again after 15 minutes',
+  },
+});
+
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 15,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: {
+    status: 'error',
+    statusCode: 429,
+    message: 'Too many auth attempts from this IP, please try again after 15 minutes',
+  },
+});
 
 // Request logger middleware
 app.use((req, res, next) => {
@@ -29,8 +66,10 @@ app.get('/health', (req, res) => {
 });
 
 // Routes
-app.use('/products', productsRouter);
-app.use('/orders', ordersRouter);
+app.use('/api/auth', authLimiter, authRoutes);
+app.use('/auth', authLimiter, authRoutes);
+app.use('/products', apiLimiter, productsRouter);
+app.use('/orders', apiLimiter, ordersRouter);
 
 // 404 catch-all middleware
 app.use((req, res) => {

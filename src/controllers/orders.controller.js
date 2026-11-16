@@ -36,28 +36,11 @@ export const getOrderById = async (req, res, next) => {
 
 // 3. POST /orders
 export const createOrder = async (req, res, next) => {
-  const { items } = req.body || {};
-  // Extract customer name from verified JWT identity or request body
-  const customerName = req.user?.name || req.body?.customerName || req.user?.email;
-
-  if (!customerName || typeof customerName !== 'string' || customerName.trim() === '') {
-    return res.status(400).json({ error: 'customerName is required' });
-  }
-
-  if (!Array.isArray(items) || items.length === 0) {
-    return res.status(400).json({ error: 'items must be a non-empty array' });
-  }
-
-  for (const item of items) {
-    if (!Number.isInteger(item.productId) || item.productId <= 0) {
-      return res.status(400).json({ error: 'Each item must have a valid positive productId' });
-    }
-    if (!Number.isInteger(item.quantity) || item.quantity <= 0) {
-      return res.status(400).json({ error: 'Each item must have a valid positive integer quantity' });
-    }
-  }
-
   try {
+    const { items } = req.body;
+    // Extract customer name from verified JWT identity or request body
+    const customerName = req.user?.name || req.body?.customerName || req.user?.email || 'Authenticated User';
+
     const newOrder = await ordersService.createOrder({ customerName, items });
     res.status(201).json({ data: newOrder });
   } catch (err) {
