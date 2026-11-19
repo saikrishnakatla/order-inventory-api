@@ -71,7 +71,11 @@ app.get('/health', (req, res) => {
   });
 });
 
-// Routes
+// Routes (Supporting both standard and /api/v1 prefixes)
+app.use('/api/v1/auth', authLimiter, authRoutes);
+app.use('/api/v1/products', apiLimiter, productsRouter);
+app.use('/api/v1/orders', apiLimiter, ordersRouter);
+
 app.use('/api/auth', authLimiter, authRoutes);
 app.use('/auth', authLimiter, authRoutes);
 app.use('/products', apiLimiter, productsRouter);

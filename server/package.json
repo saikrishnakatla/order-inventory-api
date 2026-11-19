@@ -6,7 +6,8 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "node --watch src/server.js"
+    "dev": "node --watch src/server.js",
+    "simulate:flashsale": "node scripts/simulate-flash-sale.js"
   },
   "keywords": [],
   "author": "",

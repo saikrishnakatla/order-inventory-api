@@ -1,4 +1,4 @@
-import { X, Trash2, Plus, Minus, ArrowRight, Loader2, CheckCircle } from 'lucide-react';
+import { X, Trash2, Plus, Minus, ArrowRight, Loader2, CheckCircle, Package, ShoppingBag } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import { createOrder } from '../api/orders';
@@ -73,30 +73,56 @@ export default function CartDrawer() {
           {/* Body */}
           <div className="flex-1 overflow-y-auto p-6 space-y-4">
             {successOrder ? (
-              <div className="text-center py-12">
-                <CheckCircle className="w-16 h-16 text-emerald-500 mx-auto mb-4" />
-                <h3 className="text-xl font-bold text-slate-900 mb-2">Order Confirmed!</h3>
-                <p className="text-sm text-slate-500 mb-4">
-                  Order ID: <span className="font-mono font-bold">#{successOrder.id}</span>
+              <div className="text-center py-10 px-2">
+                <div className="w-16 h-16 bg-emerald-50 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-4 border border-emerald-200">
+                  <CheckCircle className="w-10 h-10" />
+                </div>
+                <h3 className="text-xl font-extrabold text-slate-900 mb-1">Order Confirmed!</h3>
+                <p className="text-xs text-slate-500 mb-3">
+                  Order ID: <span className="font-mono font-bold text-slate-800">#{successOrder.id}</span>
                 </p>
-                <p className="text-sm text-slate-600 mb-6">
-                  Thank you, <span className="font-semibold">{successOrder.customerName}</span>. Your order of{' '}
-                  <span className="font-semibold">${Number(successOrder.totalAmount).toFixed(2)}</span> has been
-                  processed.
+                <p className="text-sm text-slate-600 mb-6 bg-slate-50 p-3.5 rounded-xl border border-slate-100">
+                  Thank you, <span className="font-semibold text-slate-800">{successOrder.customerName}</span>. Your order of{' '}
+                  <span className="font-bold text-indigo-600">${Number(successOrder.totalAmount).toFixed(2)}</span> has been
+                  processed with ACID transaction safety.
                 </p>
-                <button
-                  onClick={() => {
-                    setSuccessOrder(null);
-                    setIsCartOpen(false);
-                  }}
-                  className="w-full py-2.5 bg-indigo-600 text-white rounded-xl font-medium text-sm hover:bg-indigo-700 transition"
-                >
-                  Continue Shopping
-                </button>
+                <div className="space-y-2.5">
+                  <button
+                    onClick={() => {
+                      setSuccessOrder(null);
+                      setIsCartOpen(false);
+                      navigate('/orders');
+                    }}
+                    className="w-full py-2.5 bg-indigo-600 text-white rounded-xl font-semibold text-sm hover:bg-indigo-700 transition flex items-center justify-center gap-2 shadow-sm"
+                  >
+                    <Package className="w-4 h-4" /> View in My Orders
+                  </button>
+                  <button
+                    onClick={() => {
+                      setSuccessOrder(null);
+                      setIsCartOpen(false);
+                    }}
+                    className="w-full py-2 bg-slate-100 text-slate-700 rounded-xl font-medium text-sm hover:bg-slate-200 transition"
+                  >
+                    Continue Shopping
+                  </button>
+                </div>
               </div>
             ) : cartItems.length === 0 ? (
-              <div className="text-center py-16 text-slate-400">
-                <p className="text-sm">Your cart is empty.</p>
+              <div className="text-center py-16 px-4">
+                <div className="w-16 h-16 mx-auto mb-3 bg-slate-100 rounded-full flex items-center justify-center text-slate-400">
+                  <ShoppingBag className="w-8 h-8" />
+                </div>
+                <h4 className="text-base font-bold text-slate-800 mb-1">Your cart is empty</h4>
+                <p className="text-xs text-slate-500 mb-6 max-w-xs mx-auto">
+                  Looks like you haven't added any products to your cart yet.
+                </p>
+                <button
+                  onClick={() => setIsCartOpen(false)}
+                  className="px-5 py-2.5 bg-indigo-50 text-indigo-700 hover:bg-indigo-100 text-xs font-bold rounded-xl transition inline-flex items-center gap-1.5"
+                >
+                  Start Browsing Products
+                </button>
               </div>
             ) : (
               <>

@@ -32,6 +32,16 @@ export default function Navbar() {
               Products
             </Link>
 
+            {/* My Orders link visible for logged in users */}
+            {isAuthenticated && (
+              <Link
+                to="/orders"
+                className="text-sm font-medium text-slate-700 hover:text-indigo-600 transition"
+              >
+                My Orders
+              </Link>
+            )}
+
             {/* Admin Dashboard link visible only to Admin users */}
             {isAdmin && (
               <Link
